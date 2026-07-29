@@ -1,5 +1,13 @@
 # @electric-sql/pglite
 
+## 0.5.5
+
+### Patch Changes
+
+- 6b6f28d: Fix `PGlite.create({ fs })` on a fresh database calling the provided filesystem's `init()` twice: the inner initdb instance no longer inherits the user-provided `fs` and always runs on its own scratch filesystem. Previously any VFS holding exclusive resources (e.g. OPFS sync access handles) failed with a contention error on first create.
+- 20839a7: Preserve the host `process.exitCode` when closing a PGlite instance. `close()` calls `_emscripten_force_exit(0)`, whose Emscripten runtime sets `process.exitCode = 0`, clobbering any exit code the host process had already set. This mirrors the existing save/restore guards in `#init()` and `execProtocolRaw()`, so closing a database no longer silently resets the host process's exit code.
+- 7e784a4: Reject operations performed through transaction handles after the transaction has closed.
+
 ## 0.5.4
 
 ### Patch Changes
